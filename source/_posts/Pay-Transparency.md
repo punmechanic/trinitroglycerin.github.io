@@ -43,3 +43,22 @@ It is difficult to find tax calculators for previous years for Ireland, so all f
 |$5723|2022|Senior Security Engineer|Riot Games|Los Angeles, California|est $3500|
 
 Note that the LA entry does not include healthcare since I do not know how much that will cost yet.
+
+Bonuses, Equity etc
+---
+
+Riot has a bonus system that rewards you with an annual bonus, as well as a longer term bonus. This effectively means you have two bonuses, your annual bonus and your long term incentive bonus. Each bonus is the product of a percentage of your own salary and a multiplier, based off of company and personal performance for each year. However, this is a new system, and I don't remember all the numbers. Because it's based off of a percentage of your base salary, having a higher salary means you get more in bonus by default.
+
+For my current title - Senior Security Engineer, as of 2021 - The base amount of my bonus, both annual and long-term, is 15%.
+
+Because the amount is based on a percentage of your base salary **and** a modifier (which has always been above 1.5 for me, but does not necessarily have to be), it's difficult to estimate what total compensation is. If we assume that the modifier **is** 1.5 (it can be higher, and can be lower), then my total comp is:
+
+|Source|Amount|
+|----|----|
+|Base Salary|€90,000|
+|Annual Bonus|€20,250|
+|LTI Bonus†|€20,250|
+|**Total**|€130,500|
+|**Total (post-tax)**|€72,234|
+
+† The LTI bonus is received 3 years from the calendar year it is issued. For example, if I receive a multiplier of 1.5 for 2021, I will receive the bonus for that year in 2024.
