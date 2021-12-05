@@ -1,10 +1,10 @@
 ---
-title: Pay Transparency
+title: Pay Transparency 2021
 date: 2021-12-05 02:34:08
 tags:
 ---
 
-This post contains all of my salaries since I began my career. Salaries with an asterisk next to them are estimates - the true figure has been lost to time. Bonuses are not included for the same reason; I don't remember the percentages of the bonuses I recieved.
+This post contains all of my salaries since I began my up to date. Salaries with an asterisk next to them are estimates - the true figure has been lost to time. Bonuses are not included for the same reason; I don't remember the percentages of the bonuses I recieved.
 
 I have no degree. I have one certification, the SANS GWAPT, which I acquired in 2017 after working at Riot. I am a white male and, at time of my first job, was 18.
 
@@ -60,5 +60,19 @@ Because the amount is based on a percentage of your base salary **and** a modifi
 |LTI Bonus†|€20,250|
 |**Total**|€130,500|
 |**Total (post-tax)**|€72,234|
+
+California
+---
+
+I am aware of my pay in California as I'm currently in the process of applying for an L1-b visa to work in Los Angeles. The amount cited here is the amount on the immigration petition. The annual and LTI bonus percentages will likely stay the same, at 15%. Updated pay table as above for that:
+
+|Source|Amount|
+|----|----|
+|Base Salary|$164,000|
+|Annual Bonus|$36,900|
+|LTI Bonus†|$36,900|
+|**Total**|$237,800|
+|**Total (post-tax)**|$152,985|
+
 
 † The LTI bonus is received 3 years from the calendar year it is issued. For example, if I receive a multiplier of 1.5 for 2021, I will receive the bonus for that year in 2024.
