@@ -7,16 +7,16 @@ body
   grid-column-gap: 20px;
 
 #header
-  --max-row-height 300px;
   grid-row: 1;
   grid-column: span 4;
   display: grid;
   grid-template-columns: 20px 1fr 1fr 1fr 20px;
-  grid-template-rows: minmax(20px, var(--max-row-height));
+  grid-template-rows: 1fr 5fr;
+
   #header-title
     grid-row: 2;
     grid-column: span 5;
-    height: var(--max-row-height);
+    height: 100%;
 
   #main-nav,
   #sub-nav,
