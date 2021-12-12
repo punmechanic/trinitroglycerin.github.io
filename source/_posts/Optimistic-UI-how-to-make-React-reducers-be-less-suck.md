@@ -60,12 +60,14 @@ If that’s the case, the following pattern might be more appropriate:
 ```tsx
 const { data, pending, error } = useReducer((state, action) => {
   if (‘payload’ in action) {
-    return { data: action.payload, pending: action.pending }
+    return { data: action.payload, pending: action.pending };
   }
 
   if (‘error’ in action) {
-    return { …state, error }
-  }  return state
+    return { …state, error };
+  }
+
+  return state;
 }, initialState);
 
 const set = async (amount) => {
