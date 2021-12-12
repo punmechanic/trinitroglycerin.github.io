@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>What&#39;s a Leak anyway? | aredherring.tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="I posted this tweet the other day and it got a lot of attention, primarily because it was retweeted by a few high-profile individuals within the League and League-adjacent Twittersphere. There was a b">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What&#39;s a Leak anyway?">
+<meta property="og:url" content="http://aredherring.tech/2021/06/05/What-s-a-Leak-anyway/index.html">
+<meta property="og:site_name" content="aredherring.tech">
+<meta property="og:description" content="I posted this tweet the other day and it got a lot of attention, primarily because it was retweeted by a few high-profile individuals within the League and League-adjacent Twittersphere. There was a b">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-06-05T18:00:00.000Z">
+<meta property="article:modified_time" content="2021-12-12T08:35:48.389Z">
+<meta property="article:author" content="Dan">
+<meta property="article:tag" content="security">
+<meta property="article:tag" content="riot">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="aredherring.tech" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">aredherring.tech</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://aredherring.tech"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-What-s-a-Leak-anyway" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/06/05/What-s-a-Leak-anyway/" class="article-date">
+  <time class="dt-published" datetime="2021-06-05T18:00:00.000Z" itemprop="datePublished">2021-06-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      What&#39;s a Leak anyway?
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>I posted <a target="_blank" rel="noopener" href="https://twitter.com/riotdanhonks/status/1411717226441412611">this tweet</a> the other day and it got a lot of attention, primarily because it was retweeted by a few high-profile individuals within the League and League-adjacent Twittersphere. There was a bit of confusion about what a leak is — and what the difference between a leak and a teaser is. Let me explain in this post.</p>
+<p>TL:DR at the bottom.</p>
+<p>Disclaimer: I <strong>do not</strong> work on leak investigations professionally. I work as an engineer in our security team, so I have been present when leak investigations have taken place and have sometimes seen post-mortems of leaks. This will be a good primer, but you’d really want to consult someone more experienced for a complete view.</p>
+<p>I also want to be clear that this is going to focus <strong>solely on leaks regarding unreleased content</strong>. There are a lot of parallels between that and whistle blowing, but whistle blowing is a fundamentally different thing and I am not about to advise anyone on how to address whistle blowing nor do I think that anyone should be trying to prevent it.</p>
+<h2 id="Who-cares-about-leaks-Leaks-are-fun-for-players"><a href="#Who-cares-about-leaks-Leaks-are-fun-for-players" class="headerlink" title="Who cares about leaks? Leaks are fun for players."></a>Who cares about leaks? Leaks are fun for players.</h2><p>RiotJennisaur explained why leaks are bad pretty well:</p>
+<blockquote>
+<p>This. Leaks are devastating to us because it robs our opportunity to present new products to players in a curated way.</p>
+</blockquote>
+<p>(Source: <a target="_blank" rel="noopener" href="https://twitter.com/RiotJennisaur/status/1411776829199851521">https://twitter.com/RiotJennisaur/status/1411776829199851521</a>)</p>
+<p>A leak prevents a game developer from showing players the to-be-released content in the light they want to see it. Perhaps the content isn’t finished or is missing valuable context. There’s also usually a lot of work that goes into a teaser — it’s not usually a case of showing a skin, but there may be cinematics, artwork, promotional material, events, and so on — and something being leaked takes the surprise away from players.</p>
+<p>It also makes developers feel very… deflated.. when something they’ve worked on and intended as a surprise is released in all of its glory before it’s even finished.</p>
+<p>I’ve never met someone who worked at a games company who was happy or even ambivalent about a piece of content being leaked too early. It’s always a disappointing feeling because not only can you not show the content in the intended light, you also feel the air of betrayed trust — that someone who works at the company with you disclosed content that you worked on before it was ready to be shown.</p>
+<h2 id="Leaks-are-not-intentional-marketing-tools"><a href="#Leaks-are-not-intentional-marketing-tools" class="headerlink" title="Leaks are not intentional marketing tools"></a>Leaks are not intentional marketing tools</h2><p>There’s a few dictionary definitions of a leak — I’m not going to post those here. You could just use a dictionary. Here’s my criteria for what makes something a leak:</p>
+<ul>
+<li>Information is disclosed without the consent of the owner of the information</li>
+<li>The disclosure can be accidental <strong>or</strong></li>
+<li>The disclosure is intentional by either one or many actors with the intent of furthering their own interests at the expense of the owner of the information</li>
+</ul>
+<p>In plain English:</p>
+<h3 id="Information-is-disclosed-without-the-consent-of-the-owner-of-the-information"><a href="#Information-is-disclosed-without-the-consent-of-the-owner-of-the-information" class="headerlink" title="Information is disclosed without the consent of the owner of the information"></a>Information is disclosed without the consent of the owner of the information</h3><p>Let’s say that Riot comes up with a new look for an existing champion. There’s an implicit understanding at Riot that this new look is private information and should not be disclosed to anyone outside of Riot — and that being able to see the new look before players is a perk of the job.</p>
+<p>Suppose that that new appearance gets disclosed <strong>without the knowledge</strong> or prior authorization of the skins or marketing teams. That would be a leak.</p>
+<h3 id="The-disclosure-can-be-accidental"><a href="#The-disclosure-can-be-accidental" class="headerlink" title="The disclosure can be accidental"></a>The disclosure can be accidental</h3><p>Sometimes, disclosures can happen as a result of security vulnerabilities — This is where my team would come in. In particular, it’s not uncommon for campaign pieces (i.e, very fancy blog posts) to be placed in a draft section on a public facing website a few hours before they are released, but marked as hidden, so that theoretically they don’t show up to players.</p>
+<p>If, however, there is a bug and hidden posts still show up in certain API calls, astute individuals might be able to data-mine hidden content from that website and post it <strong>before</strong> the intended release date and — tadah — You have a leak.</p>
+<h3 id="Or-the-disclosure-is-intentional-by-either-one-or-many-actors-with-the-intent-of-furthering-their-own-interests-at-the-expense-of-the-owner-of-the-information"><a href="#Or-the-disclosure-is-intentional-by-either-one-or-many-actors-with-the-intent-of-furthering-their-own-interests-at-the-expense-of-the-owner-of-the-information" class="headerlink" title="Or the disclosure is intentional by either one or many actors with the intent of furthering their own interests at the expense of the owner of the information"></a>Or the disclosure is intentional by either one or many actors with the intent of furthering their own interests at the expense of the owner of the information</h3><p>Someone leaks something because they were only thinking about their own interests and either did not consider or actively disregarded those of the owner of the information. This doesn’t necessary need to be malicious.</p>
+<p>There have been times where I’ve seen unreleased content get shared, in confidence, to an employee’s best friend, who would absolutely never tell the world ever and.. well, you can see where this is going. The friend shares it with a friend who shares with a friend and suddenly the whole world knows.</p>
+<p>There <strong>are</strong> also incidents where someone intentionally disseminates information with the full understanding that this might harm the company’s interests in an effort to promote their own — For example, a streamer who comes across information that any reasonable person would understand to be confidential and/or a leak, but makes a big piece out of it or uses it to advertise their own stream or YouTube channel.</p>
+<p>This is usually not the primary source of a leak (imagine betting your job on the success of a YouTube channel), but usually someone who discovers leaked material through a friend of a friend or through a security vulnerability or some other means and takes advantage of the disclosure for their own gain.</p>
+<h2 id="What’s-the-difference-between-a-leak-and-a-teaser"><a href="#What’s-the-difference-between-a-leak-and-a-teaser" class="headerlink" title="What’s the difference between a leak and a teaser?"></a>What’s the difference between a leak and a teaser?</h2><p>Having enumerated what a leak is — accidental disclosure, against the interests of the company, at the furtherance of someones own interests — you could say that a teaser is the exact opposite.</p>
+<p>In my mind, a teaser:</p>
+<ul>
+<li>Is an intentional, thought-out release of information designed to drive hype</li>
+<li>Usually involves multiple teams and is, essentially, a marketing campaign</li>
+<li>Almost always comes in the form of an easter egg or short piece of content from a source directly associated with the company</li>
+</ul>
+<p>For example, a teaser might be a picture of Sylas’ chains in a dev blog article, or the big marketing campaign around Jhin when he was first released. Perhaps it could be an intentional piece of art left up in an official video released through the social media accounts of a company as an easter egg.</p>
+<p>The core thing that connects all of these is that they are usually come from content that is <strong>clearly identifiable</strong> as being an intentional release of information from a source that is directly associated with the company. Any company that is going to be releasing content — especially paid for content — is going to want to make sure that potential customers see that content in a curated way and in the best possible light.</p>
+<p>If you’re seeing grainy screenshots from some corner of the internet sourced from your Dad who works at Nintendo, then it’s probably a leak, and not a teaser. Teasers are very deliberate.</p>
+<h2 id="How-do-you-stop-people-leaking-What-does-it-say-that-there-are-so-many-leaks"><a href="#How-do-you-stop-people-leaking-What-does-it-say-that-there-are-so-many-leaks" class="headerlink" title="How do you stop people leaking? What does it say that there are so many leaks?"></a>How do you stop people leaking? What does it say that there are so many leaks?</h2><p>This is a long blog post already, but this one came up a lot. Going to quickly summarize my views on this one, since it’s getting late here.</p>
+<p><strong>You can’t stop leaks through enforcement means</strong>. Leaking happens for many reasons, including, but not limited to:</p>
+<ul>
+<li>Dissatisfaction with the company/coworkers</li>
+<li>A desire to gain notoriety</li>
+<li>A desire to share their own excitement about the content with a supposedly trusted friend or set of friends</li>
+</ul>
+<p>In general, enforcement to prevent leaks is going to be more like a lock on your door at night. It might stop crimes of opportunity — such as someone stealing something from you while you step out of the house because you locked the door — but it’s not going stop someone who is truly motivated to leak something for their own reasons. No amount of threats of punitive action is going to scare someone who believes they will never get caught in the first place or simply doesn’t fear the consequences.</p>
+<p>Preventing leaks, then, mostly comes down to two things:</p>
+<ul>
+<li>Cultivating a culture of collective ownership (Is that buzz-wordy enough for you, Twitter?)</li>
+<li>Restricting access to sensitive information.</li>
+</ul>
+<p>Cultivating a culture of collective ownership is, in my experience, the best case scenario — a situation in which everyone is given access to sensitive material and it is expressed to them that we are all responsible for making sure that something is delivered to players without being leaked. This enables employees to feel trusted with a secret and also gives them the motivation to want to keep the secret safe — because they feel like they have a part to play in it.</p>
+<p>I’ve also heard of some instances of companies offering cash bonuses to employees if something releases without being leaked, not sure how effective those are, though.</p>
+<p>Unfortunately, as a company grows, it becomes harder and harder to rely on trust — it’s much easier for a small start-up to keep everything under-wraps than it is a 5000 strong company, and that’s why you see large companies leaking like a sieve despite having the budget for a strong security team.</p>
+<p>Restricting access to sensitive information feels pretty bad — not being able to share cool stuff with your colleagues sucks. This is what companies tend to reach for when it’s not really possible to rely on trust all the time. This doesn’t necessarily mean the company is hiring the wrong people, which is a sentiment I saw frequently too — People are complicated and have their own agenda, and every person is one bad day away from causing a lot of damage to a corporation. You can absolutely hire people and trust them to perform a certain set of responsibilities and not trust them with all of the confidential information at the company.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>I hope this helps explain the difference between leaks and teasers. In short:</p>
+<ul>
+<li>Teasers are complex marketing campaigns and the unifying thread is that they are usually identifiable as an intended release of information from a company and are usually promoted on the company’s main social media/press release channels.</li>
+<li>Leaks are unintended releases of information showing a product or piece of information in either an unfinished or damaging light; they usually come from unclear sources (to the viewer, anyway) and are not usually identifiable as being an intentional publication.</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://aredherring.tech/2021/06/05/What-s-a-Leak-anyway/" data-id="ckx2zss560004i4onafhvdqwj" data-title="What&#39;s a Leak anyway?" class="article-share-link">Share</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/riot/" rel="tag">riot</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/security/" rel="tag">security</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/07/28/Optimistic-UI-how-to-make-React-reducers-be-less-suck/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Optimistic UI: how to make React reducers be less suck
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/incidents/" rel="tag">incidents</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/psa/" rel="tag">psa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/riot/" rel="tag">riot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/" rel="tag">security</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/incidents/" style="font-size: 10px;">incidents</a> <a href="/tags/javascript/" style="font-size: 10px;">javascript</a> <a href="/tags/psa/" style="font-size: 10px;">psa</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/riot/" style="font-size: 10px;">riot</a> <a href="/tags/security/" style="font-size: 20px;">security</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">July 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">June 2021</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/12/05/Pay-Transparency/">Pay Transparency 2021</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/06/Twitch-got-breached-Here-s-what-you-need-to-know/">Twitch got breached.</a>
+          </li>
+        
+          <li>
+            <a href="/2021/07/28/Optimistic-UI-how-to-make-React-reducers-be-less-suck/">Optimistic UI: how to make React reducers be less suck</a>
+          </li>
+        
+          <li>
+            <a href="/2021/06/05/What-s-a-Leak-anyway/">What&#39;s a Leak anyway?</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2021 Dan<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

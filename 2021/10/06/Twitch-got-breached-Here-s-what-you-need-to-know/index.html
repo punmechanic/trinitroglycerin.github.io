@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Twitch got breached. | aredherring.tech</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="TL:DR: Change your password and enable 2FA. Passwords have not been released to the public (yet?), but they are stored in a format that makes them difficult to guess. There is no reason to expect that">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Twitch got breached.">
+<meta property="og:url" content="http://aredherring.tech/2021/10/06/Twitch-got-breached-Here-s-what-you-need-to-know/index.html">
+<meta property="og:site_name" content="aredherring.tech">
+<meta property="og:description" content="TL:DR: Change your password and enable 2FA. Passwords have not been released to the public (yet?), but they are stored in a format that makes them difficult to guess. There is no reason to expect that">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-10-06T18:00:00.000Z">
+<meta property="article:modified_time" content="2021-12-12T08:35:48.389Z">
+<meta property="article:author" content="Dan">
+<meta property="article:tag" content="security">
+<meta property="article:tag" content="incidents">
+<meta property="article:tag" content="psa">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="aredherring.tech" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">aredherring.tech</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://aredherring.tech"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Twitch-got-breached-Here-s-what-you-need-to-know" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/10/06/Twitch-got-breached-Here-s-what-you-need-to-know/" class="article-date">
+  <time class="dt-published" datetime="2021-10-06T18:00:00.000Z" itemprop="datePublished">2021-10-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Twitch got breached.
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p><strong>TL:DR</strong>: Change your password and enable 2FA. Passwords have not been released to the public (yet?), but they are stored in a format that makes them difficult to guess.</p>
+<p>There is no reason to expect that users will have, or will be, exposed to viruses by the original leakers, but it is possible the leaked code may cause vulnerabilities to be found and exploited. Be vigilant.</p>
+<p>For the love of God, please don’t use this as an excuse to harass individuals working at Twitch. Compromises can happen to anyone, especially if perpetrated by ideologically motivated individuals with a lot of knowledge. Twitch definitely has improvements to be done with regards to moderation/preventing hate raids, but incidents like this are always super stressful particularly for those trying to put out the fire.</p>
+<h2 id="Intro"><a href="#Intro" class="headerlink" title="Intro"></a>Intro</h2><p>Keep in mind the following before continuing on:</p>
+<ul>
+<li>This is a developing situation, with Twitch themselves unaware of the scope of the impact. Comments in this post are informed guesses based on what is present in the info dump from the breach.</li>
+<li>I am not affiliated with Twitch.</li>
+<li>This is a post by Dan the individual, not Dan the information security employee of &lt;gaming company&gt;. Do not take this as a security advisory from my employer.</li>
+</ul>
+<p>I woke up this morning to the information that Twitch had been breached. Not just one database on Twitch, but all of it. In this article I’m going to focus on what <strong>you as a Twitch user or streamer need to know</strong>. There will be some technical detail later on. Here’s the executive summary:</p>
+<ul>
+<li>The leaked content was titled “twitch leak part one”. The dump in total is 130Gb.</li>
+<li>The leak contains what appears to be most of the code that makes Twitch work, with a <strong>significant</strong> amount of intellectual property.</li>
+<li>No usernames, passwords or phone numbers were in this leak, but I’ve heard rumors floating around that there is a part two, which will contain some more user information.</li>
+<li>Included in the leak were revenue sheets of streamers with payouts from Twitch sources to those streamers from 2019, 2020 and 2021.</li>
+</ul>
+<p>The leak of the code itself is not particularly damaging if you’re a streamer. If the code were the sole content of the dump, then I would say there isn’t much to worry. However, the fact that there are revenue sheets, which almost certainly were not stored with the code that was leaked, and the fact that there are rumors of passwords being breached as well, makes it a bit more concerning.</p>
+<h2 id="Malware-Viruses"><a href="#Malware-Viruses" class="headerlink" title="Malware (Viruses)"></a>Malware (Viruses)</h2><p>There’s no inclination that the individuals who breached Twitch and released this information were able to, or are able to, expose users to malware. The dump contains a lot of privileged information and intellectual property, but having access to confidential documents and being able to distribute code to Twitch users are two different things.</p>
+<h2 id="Emails-and-passwords"><a href="#Emails-and-passwords" class="headerlink" title="Emails and passwords"></a>Emails and passwords</h2><p>The dump includes a service called Passport, which is Twitch’s primary authentication service from my reckoning. This stores usernames, passwords, phone numbers, dates of birth and email addresses among a few other things.</p>
+<p>Any account that has been logged in to since March 22nd, 2015, has their password protected using bcrypt. This is a secure way of protecting passwords that is difficult to break. <strong>You should still change your password for Twitch</strong>. No protection is perfect, and bcrypt can be broken — it’ll just take a lot of attempts to do so. If you have re-used that password anywhere else, you should go and change those too.</p>
+<p>Because e-mails are stored with passwords, if passwords are leaked, it’s likely email addresses will too. The individuals who breached Twitch have indicated that their reasons are ideological, and so it’s unlikely they will leak information that will directly harm users, but I’m not an oracle and, if you’re a big streamer, you probably don’t want to take the chance that it won’t be released.</p>
+<h2 id="Phone-numbers-and-multi-factor-authentication-MFA"><a href="#Phone-numbers-and-multi-factor-authentication-MFA" class="headerlink" title="Phone numbers and multi-factor authentication (MFA)"></a>Phone numbers and multi-factor authentication (MFA)</h2><p>Phone numbers are stored by Twitch if you have enabled multi-factor authentication with Twitch in any form, even if you use the Authy app or something similar. This is because Twitch requires your phone number to serve as a back-up in case you lose the MFA application.</p>
+<p>Unfortunately, phone numbers are stored with your username, password and email. Any dump that includes passwords and usernames will have had access to phone numbers. It is possible, should a credential dump be released, that the phone numbers of associated users may be released too.</p>
+<p>Despite Twitch requiring your phone number to enable MFA, now would be a really good time to enable MFA on Twitch, as well as any other website that offers it. MFA is a really good last line of defense if someone does guess your password. If you are going to enable MFA, avoid SMS MFA and use app-based MFA if you have a smart phone.</p>
+<h2 id="Payment-Information"><a href="#Payment-Information" class="headerlink" title="Payment Information"></a>Payment Information</h2><p>No payment information for users (i.e PayPal account information, tax identification numbers, social security etc) are stored with emails and passwords — it’s all in a separate database. That does not mean that it won’t get leaked, but if the attackers only had access to the authentication database, they might not have access to whichever one stores payment information.</p>
+<h2 id="Revenue-Sheet"><a href="#Revenue-Sheet" class="headerlink" title="Revenue Sheet"></a>Revenue Sheet</h2><p>Of more interest is the revenue sheet. This was almost certainly not stored with the rest of the code that was leaked. The revenue sheet appears to be a the dump of a database, although during the time I was looking at the code I was not able to ascertain the code that “backed” that database. This would seem to imply that the individuals who leaked the database had access to more than just whatever code was available, and knew where to look to retrieve that information.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>Most of the impact of the data leaked today is the loss of confidential intellectual property for Twitch, as well as the loss of private information for some Twitch streamers.</p>
+<p>The individuals who published the leak have indicated that their reasons are ideological, and that they wish to “foster more disruption and competition in the online video streaming space”. It’s unclear whether that ideology extends to directly harming the privacy of users by releasing the user information.</p>
+<p>Until and unless the attackers release the information they claim to have, the main advice I would have to any streamers right now would be to change their password — especially if they have used it in multiple places — and to enable multi-factor authentication.</p>
+<p>Other companies should take this as a cautionary tale as to why they should not require phone numbers for two-factor authentication, and limit any personal information collected to the bare minimum, as any and all personal information collected may be released and harm users.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://aredherring.tech/2021/10/06/Twitch-got-breached-Here-s-what-you-need-to-know/" data-id="ckx2zss550003i4on9oyreg98" data-title="Twitch got breached." class="article-share-link">Share</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/incidents/" rel="tag">incidents</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/psa/" rel="tag">psa</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/security/" rel="tag">security</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/12/05/Pay-Transparency/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Pay Transparency 2021
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/07/28/Optimistic-UI-how-to-make-React-reducers-be-less-suck/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Optimistic UI: how to make React reducers be less suck</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/incidents/" rel="tag">incidents</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/psa/" rel="tag">psa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/riot/" rel="tag">riot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/" rel="tag">security</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/incidents/" style="font-size: 10px;">incidents</a> <a href="/tags/javascript/" style="font-size: 10px;">javascript</a> <a href="/tags/psa/" style="font-size: 10px;">psa</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/riot/" style="font-size: 10px;">riot</a> <a href="/tags/security/" style="font-size: 20px;">security</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">July 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">June 2021</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/12/05/Pay-Transparency/">Pay Transparency 2021</a>
+          </li>
+        
+          <li>
+            <a href="/2021/10/06/Twitch-got-breached-Here-s-what-you-need-to-know/">Twitch got breached.</a>
+          </li>
+        
+          <li>
+            <a href="/2021/07/28/Optimistic-UI-how-to-make-React-reducers-be-less-suck/">Optimistic UI: how to make React reducers be less suck</a>
+          </li>
+        
+          <li>
+            <a href="/2021/06/05/What-s-a-Leak-anyway/">What&#39;s a Leak anyway?</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2021 Dan<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
