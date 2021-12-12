@@ -1,20 +1,9 @@
 #header
-  display: flex
   height: banner-height
   position: relative
   border-bottom: 1px solid color-border
   background: url(banner-url) center #000
   background-size: cover
-  padding: 0px 20px
-  flex-direction: column
-
-#header-topbar
-  display: flex
-  width: 100%
-  flex-direction: row
-  align-items: center
-  justify-content: space-between
-  order: 1
   // These two are required for the search bar to function correctly
   position: relative
   overflow: hidden
@@ -83,6 +72,10 @@ $nav-link
     content: "\f0c9"
   @media mq-mobile
     display: block
+
+#sub-nav
+  display: flex;
+  justify-content: flex-end;
 
 #nav-rss-link
   &:before
