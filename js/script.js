@@ -1,138 +1,123 @@
-(function($){
-  // Search
-  var $searchWrap = $('#search-form-wrap'),
-    isSearchAnim = false,
-    searchAnimDuration = 200;
+// Search
+const searchInput = document.getElementsByClassName('search-form-input')[0];
+const searchWrap = document.getElementById('search-form-wrap')
+const searchButton = document.getElementById('nav-search-btn');
+searchButton.addEventListener('click', function () {
+  searchWrap.classList.add('on');
+  // We handle this here to ensure that we only ever focus the search input when we are revealing the search input.
+  searchButton.addEventListener('transitionend', () => searchInput.focus(), { once: true });
+});
 
-  var startSearchAnim = function(){
-    isSearchAnim = true;
-  };
+searchInput.addEventListener('blur', () => {
+  searchWrap.classList.remove('on');
+});
 
-  var stopSearchAnim = function(callback){
-    setTimeout(function(){
-      isSearchAnim = false;
-      callback && callback();
-    }, searchAnimDuration);
-  };
+// Mobile nav
+const container = document.getElementById('container');
+const navToggle = document.getElementById('main-nav-toggle');
+navToggle.addEventListener('click', event => {
+  event.stopPropagation();
+  container.classList.toggle('mobile-nav-on');
+});
 
-  $('#nav-search-btn').on('click', function(){
-    if (isSearchAnim) return;
+const wrap = document.getElementById('wrap');
+wrap.addEventListener('click', () => {
+  container.classList.remove('mobile-nav-on');
+});
 
-    startSearchAnim();
-    $searchWrap.addClass('on');
-    stopSearchAnim(function(){
-      $('.search-form-input').focus();
-    });
-  });
+// Share
+function findShareBox(postId) {
+  return document.getElementById(`article-share-box-${postId}`);
+}
 
-  $('.search-form-input').on('blur', function(){
-    startSearchAnim();
-    $searchWrap.removeClass('on');
-    stopSearchAnim();
-  });
+function createShareBox(title, url, postId) {
+  const encodedURL = encodeURIComponent(url);
+  const links = [
+    { name: 'Twitter', href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodedURL}` },
+    { name: 'LinkedIn', href: `https://www.linkedin.com/shareArticle?mini=true&url=${encodedURL}` },
+    { name: 'Pinterest', href: `https://pinterest.com/pin/create/button/?url=${encodedURL}` },
+    { name: 'Facebook', href: `https://www.facebook.com/sharer.php?u=${encodedURL}` }
+  ];
 
-  // Share
-  $('body').on('click', function(){
-    $('.article-share-box.on').removeClass('on');
-  }).on('click', '.article-share-link', function(e){
+  const linkContainer = document.createElement('div');
+  linkContainer.classList.add('article-share-links');
+  for (const { name, href } of links) {
+    const anchor = document.createElement('a');
+    anchor.title = name;
+    anchor.href = href;
+    anchor.classList.add(`article-share-${name.toLowerCase()}`);
+    linkContainer.appendChild(anchor);
+  }
+
+  const input = document.createElement('input');
+  input.classList.add('article-share-input');
+  input.value = url;
+  input.type = 'text';
+
+  const box = document.createElement('div');
+  box.id = `article-share-box-${postId}`;
+  box.classList.add('article-share-box');
+  box.appendChild(input);
+  box.appendChild(linkContainer);
+  box.addEventListener('click', e => {
     e.stopPropagation();
+  });
 
-    var $this = $(this),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      id = 'article-share-box-' + $this.attr('data-id'),
-      title = $this.attr('data-title'),
-      offset = $this.offset();
+  return box;
+}
 
-    if ($('#' + id).length){
-      var box = $('#' + id);
+document.body.addEventListener('click', () => {
+  for (const box of document.getElementsByClassName('article-share-box on')) {
+    box.classList.remove('on');
+  }
+});
 
-      if (box.hasClass('on')){
-        box.removeClass('on');
-        return;
-      }
-    } else {
-      var html = [
-        '<div id="' + id + '" class="article-share-box">',
-          '<input class="article-share-input" value="' + url + '">',
-          '<div class="article-share-links">',
-            '<a href="https://twitter.com/intent/tweet?text=' + encodeURIComponent(title) + '&url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="article-share-pinterest" target="_blank" title="Pinterest"></a>',
-            '<a href="https://www.linkedin.com/shareArticle?mini=true&url=' + encodedUrl + '" class="article-share-linkedin" target="_blank" title="LinkedIn"></a>',
-          '</div>',
-        '</div>'
-      ].join('');
+for (const link of document.getElementsByClassName('article-share-link')) {
+  link.addEventListener('click', e => {
+    e.stopPropagation();
+    const postId = link.getAttribute('data-id');
+    let node = findShareBox(postId);
+    if (node === null) {
+      const shareBox = createShareBox(
+        link.getAttribute('data-title'),
+        link.getAttribute('data-url'),
+        postId
+      );
 
-      var box = $(html);
-
-      $('body').append(box);
+      document.body.appendChild(shareBox);
+      node = shareBox;
     }
 
-    $('.article-share-box.on').hide();
+    // Hide all other share boxes
+    for (const el of document.getElementsByClassName('article-share-box on')) {
+      el.classList.remove('on');
+    }
 
-    box.css({
-      top: offset.top + 25,
-      left: offset.left
-    }).addClass('on');
-  }).on('click', '.article-share-box', function(e){
-    e.stopPropagation();
-  }).on('click', '.article-share-box-input', function(){
-    $(this).select();
-  }).on('click', '.article-share-box-link', function(e){
-    e.preventDefault();
-    e.stopPropagation();
-
-    window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+    node.classList.add('on');
+    node.style.top = `${link.offsetTop + 25}px`;
+    node.style.left = `${link.offsetLeft}px`;
   });
+}
 
-  // Caption
-  $('.article-entry').each(function(i){
-    $(this).find('img').each(function(){
-      if ($(this).parent().hasClass('fancybox') || $(this).parent().is('a')) return;
+// Caption
+for (const article of document.getElementsByClassName('article-entry')) {
+  for (const img of article.getElementsByTagName('img')) {
+    if (img.parentNode?.tagName === 'A') {
+      continue;
+    }
 
-      var alt = this.alt;
-
-      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
-
-      $(this).wrap('<a href="' + this.src + '" data-fancybox=\"gallery\" data-caption="' + alt + '"></a>')
-    });
-
-    $(this).find('.fancybox').each(function(){
-      $(this).attr('rel', 'article' + i);
-    });
-  });
-
-  if ($.fancybox){
-    $('.fancybox').fancybox();
+    // TODO(trinitroglycerin): Write a plugin to do this and modify the layout to use that plugin tag.
+    const alt = img.alt;
+    const container = document.createElement('figure');
+    // The parent node will be a <p>.
+    img.parentNode.replaceWith(container);
+    container.appendChild(img);
+    if (alt) {
+      // Alt text should not be included if it's already present in the content.
+      img.alt = "";
+      const node = document.createElement('figcaption');
+      node.textContent = alt;
+      container.appendChild(node);
+    }
   }
-
-  // Mobile nav
-  var $container = $('#container'),
-    isMobileNavAnim = false,
-    mobileNavAnimDuration = 200;
-
-  var startMobileNavAnim = function(){
-    isMobileNavAnim = true;
-  };
-
-  var stopMobileNavAnim = function(){
-    setTimeout(function(){
-      isMobileNavAnim = false;
-    }, mobileNavAnimDuration);
-  }
-
-  $('#main-nav-toggle').on('click', function(){
-    if (isMobileNavAnim) return;
-
-    startMobileNavAnim();
-    $container.toggleClass('mobile-nav-on');
-    stopMobileNavAnim();
-  });
-
-  $('#wrap').on('click', function(){
-    if (isMobileNavAnim || !$container.hasClass('mobile-nav-on')) return;
-
-    $container.removeClass('mobile-nav-on');
-  });
-})(jQuery);
+}
