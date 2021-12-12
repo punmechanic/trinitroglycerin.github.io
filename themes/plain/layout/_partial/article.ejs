@@ -1,12 +1,9 @@
 <article id="<%= post.layout %>-<%= post.slug %>" class="h-entry article article-type-<%= post.layout %>" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <%- partial('post/date', {class_name: 'article-date', date_format: null}) %>
-    <%- partial('post/category') %>
-  </div>
   <div class="article-inner">
     <% if (post.link || post.title){ %>
       <header class="article-header">
         <%- partial('post/title', {class_name: 'p-name article-title'}) %>
+        <%- partial('post/meta', {class_name: 'article-meta', date_format: null}) %>
       </header>
     <% } %>
     <div class="e-content article-entry" itemprop="articleBody">
