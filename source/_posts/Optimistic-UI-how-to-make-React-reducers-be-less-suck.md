@@ -8,7 +8,7 @@ tags:
 
 Verbosity is not necessarily a bad thing, but sometimes it can feel annoying to write the same boilerplate over and over again. The following is a common pattern in React (or Redux) reducers, and is very verbose:
 
-```js
+```tsx
 const [{count, isActive, error}, dispatch] = useReducer(
   (state: StateType, action: ActionType) => {
     switch (action.type) {
@@ -44,7 +44,7 @@ const set = (amount: number) => {
       dispatch({ type: "SET_SUCCESS", payload: amount });
     })
     .catch((error) => {
-      dispatch({ type: "SEt_FAILURE", payload: error });
+      dispatch({ type: "SET_FAILURE", payload: error });
     });
 };
 ```
@@ -57,7 +57,7 @@ Sometimes, though, you have either lower-sensitivity updates where you don’t c
 
 If that’s the case, the following pattern might be more appropriate:
 
-```js
+```tsx
 const { data, pending, error } = useReducer((state, action) => {
   if (‘payload’ in action) {
     return { data: action.payload, pending: action.pending }
