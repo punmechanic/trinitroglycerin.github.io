@@ -1,26 +1,25 @@
-// https://github.com/chriskempson/tomorrow-theme
-highlight-background = #2d2d2d
+/*
+Theme information:
+
+Name:       Base16 Atelier Sulphurpool Light
+Author:     Bram de Haan (http://atelierbram.github.io/syntax-highlighting/atelier-schemes/sulphurpool)
+Prism template by Bram de Haan (http://atelierbram.github.io/syntax-highlighting/prism/)
+Original Base16 color scheme by Chris Kempson (https://github.com/chriskempson/base16)
+*/
+
 highlight-current-line = #393939
 highlight-selection = #515151
-highlight-foreground = #cccccc
-highlight-comment = #999999
+highlight-comment = #898ea4
 highlight-red = #f2777a
 highlight-orange = #f99157
 highlight-yellow = #ffcc66
-highlight-green = #99cc99
 highlight-aqua = #66cccc
 highlight-blue = #6699cc
 highlight-purple = #cc99cc
 
 $code-block
-  background: highlight-background
-  margin: 0 article-padding * -1
-  padding: 15px article-padding
-  border-style: solid
-  border-color: color-border
-  border-width: 1px 0
   overflow: auto
-  color: highlight-foreground
+  color: #5e6687
   line-height: font-size * line-height
 
 $line-numbers
@@ -31,7 +30,7 @@ $line-numbers
   pre, code
     font-family: font-mono
   code
-    background: color-background
+    background: #2d2d2d
     text-shadow: 0 1px #fff
     padding: 0 0.3em
   pre
@@ -69,7 +68,6 @@ $line-numbers
     .line.marked
       background: highlight-selection
   .gist
-    margin: 0 article-padding * -1
     border-style: solid
     border-color: color-border
     border-width: 1px 0
@@ -134,25 +132,22 @@ pre
   .class
   .ruby .class .title
   .css .rules .attribute
-    color: highlight-green
+    color: #22a2c9
   .string
   .value
   .inheritance
   .header
   .ruby .symbol
   .xml .cdata
-    color: highlight-green
+    color: #22a2c9
   .css .hexcolor
     color: highlight-aqua
-  .function
   .python .decorator
   .python .title
-  .ruby .function .title
   .ruby .title .keyword
   .perl .sub
   .javascript .title
   .coffeescript .title
-    color: highlight-blue
+    color: #ac9739
   .keyword
-  .javascript .function
-    color: highlight-purple
+    color: #ac9739
