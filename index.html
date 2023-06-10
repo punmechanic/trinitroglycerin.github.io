@@ -96,7 +96,7 @@ func DoWork(LargeStruct)<span aria-hidden="true" class="line-numbers-rows"><span
 
 <p>If I invoke <code>DoWork</code> in Go 1.20, 80 bytes will be copied to the stack, because LargeStruct is 80 bytes in size. If I instead altered DoWork to accept a pointer, then only 8 bytes would be copied. You would be forgiven for thinking that copying a lower number of bytes is always strictly better - copying sounds like wasted effort, after all. But it’s more complicated than this due to how modern computers work.</p>
 <p>Modern computers are fast. Wicked fast. A good chunk of the speed of modern computers is thanks to the way that they handle dealing with data. When a programmer instructs a CPU to perform some work via a program, ultimately that program boils down to performing operations on CPU registers. Registers are very small - a 64 bit computer will have registers that are 64 bits size, in most cases (some may be slightly larger). So, how does a computer deal with a struct that is 80 bytes?</p>
-<p>A naive understanding of computers might lead you to believe that a CPU reads 64 bytes from RAM, and, after it’s done with those 64, it reads the remaining 16 bytes. This would be tremendously slow. Your RAM is very quick, but compared to the speed a CPU operates at, it’s orders of magnitude slower. What actually happens is that a CPU will read data from RAM into one of its caches - L1, L2, or L3 - in the form of cache lines. The registers will be populated from these cache lines. This process is invisible to the programmer, but taking advantage of it can result in very large performance increases, because when a CPU looks for a value to store in a register, it will first check the L1 cache, then the L2, then the L3 and it will then go and check DRAM. Each one of these jumps (<strong>Cache Misses</strong>) incurs significant overhead and has a drastic negative impact on application performance.</p>
+<p>A naive understanding of computers might lead you to believe that a CPU reads 64 bits from RAM, and, after it’s done with those 64, it reads the remaining bits until the total memory has been read. This would be tremendously slow. Your RAM is very quick, but compared to the speed a CPU operates at, it’s orders of magnitude slower. What actually happens is that a CPU will read data from RAM into one of its caches - L1, L2, or L3 - in the form of cache lines. The registers will be populated from these cache lines. This process is invisible to the programmer, but taking advantage of it can result in very large performance increases, because when a CPU looks for a value to store in a register, it will first check the L1 cache, then the L2, then the L3 and it will then go and check DRAM. Each one of these jumps (<strong>Cache Misses</strong>) incurs significant overhead and has a drastic negative impact on application performance.</p>
 <p>Explaining all of the intricacies of a CPU in this post would take a long time and would be repeating ground that others <a target="_blank" rel="noopener" href="https://teivah.medium.com/go-and-cpu-caches-af5d32cc5592">have tread much better than I could</a>, but what matters for the current topic is the idea of <em>locality</em>. When a CPU reads data from RAM into one of its caches, it will read as many cache lines as required into its cache in order to retrieve the data its looking for. This means attempting to retrieve <code>LargeStruct</code> on a 64 bit PC will (probably) result in the CPU reading 128 bytes - 80 bytes of those will be the value of <code>LargeStruct</code>, and the rest will be values that are around it. Values that are closer to each other in physical memory have <em>spatial</em> locality, and will likely be available in at least one of the CPUs caches at the same time. If the values are close to each other in physical memory, then there’s a better chance that those values will be on either the same or neighbouring cache lines when a value is read into one of the CPU’s caches, which decreases the likelihood of a cache miss and thus decreases the amount of expensive “jumps” the CPU has to make to find the value it’s looking for.</p>
 <p>So! How does this relate to putting a pointer vs a struct as a function parameter?</p>
 <p>When a pointer is passed to a function, what will be read into the cache of the processor is (probably) the memory address of the value that the processor needs to work on, and not the <em>actual</em> value. When the processor attempts to do some work on the value, it first has to go and find wherever the value that the address is pointing to is located. In some trivial examples, the value and the address could have spatial or temporal locality - for example, the following code is likely going to have the address of the pointer and the value in the same cache line:</p>
@@ -124,7 +124,7 @@ func main() &#123;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://aredherring.tech/2023/06/10/Go-Using-pointers-to-reduce-copies-is-premature-optimization/" data-id="clipncyul0000chqibakpf44r" data-title="Go: Using pointers to reduce copies is premature optimization" class="article-share-link">Share</a>
+      <a data-url="http://aredherring.tech/2023/06/10/Go-Using-pointers-to-reduce-copies-is-premature-optimization/" data-id="clipo7p6q0000bpor25i1gxkk" data-title="Go: Using pointers to reduce copies is premature optimization" class="article-share-link">Share</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/golang/" rel="tag">golang</a></li></ul>
 
@@ -411,7 +411,7 @@ func main() &#123;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://aredherring.tech/2022/06/18/Pay-Transparency-2022/" data-id="clipncyus0004chqienfrc7gt" data-title="Pay Transparency 2022" class="article-share-link">Share</a>
+      <a data-url="http://aredherring.tech/2022/06/18/Pay-Transparency-2022/" data-id="clipo7p6y0004bporhf5u17jr" data-title="Pay Transparency 2022" class="article-share-link">Share</a>
       
     </footer>
   </div>
@@ -466,7 +466,7 @@ func main() &#123;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://aredherring.tech/2022/05/31/IP-bans-don-t-work-Here-s-why/" data-id="clipncyup0001chqiajtk3nyg" data-title="IP bans don&#39;t work. Here&#39;s why." class="article-share-link">Share</a>
+      <a data-url="http://aredherring.tech/2022/05/31/IP-bans-don-t-work-Here-s-why/" data-id="clipo7p6u0001bpor38376uy2" data-title="IP bans don&#39;t work. Here&#39;s why." class="article-share-link">Share</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/security/" rel="tag">security</a></li></ul>
 
@@ -765,7 +765,7 @@ func main() &#123;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://aredherring.tech/2021/12/05/Pay-Transparency/" data-id="clipncyut0005chqiheex0eun" data-title="Pay Transparency 2021" class="article-share-link">Share</a>
+      <a data-url="http://aredherring.tech/2021/12/05/Pay-Transparency/" data-id="clipo7p6z0005bporc0s9dpke" data-title="Pay Transparency 2021" class="article-share-link">Share</a>
       
     </footer>
   </div>
@@ -825,7 +825,7 @@ func main() &#123;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://aredherring.tech/2021/10/06/Twitch-got-breached-Here-s-what-you-need-to-know/" data-id="clipncyuv0008chqiah9r5ozb" data-title="Twitch got breached." class="article-share-link">Share</a>
+      <a data-url="http://aredherring.tech/2021/10/06/Twitch-got-breached-Here-s-what-you-need-to-know/" data-id="clipo7p710008bpor76b47f0y" data-title="Twitch got breached." class="article-share-link">Share</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/incidents/" rel="tag">incidents</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/psa/" rel="tag">psa</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/security/" rel="tag">security</a></li></ul>
 
@@ -931,7 +931,7 @@ func main() &#123;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://aredherring.tech/2021/07/28/Optimistic-UI-how-to-make-React-reducers-be-less-suck/" data-id="clipncyur0003chqi5uo28gay" data-title="Optimistic UI: how to make React reducers be less suck" class="article-share-link">Share</a>
+      <a data-url="http://aredherring.tech/2021/07/28/Optimistic-UI-how-to-make-React-reducers-be-less-suck/" data-id="clipo7p6x0003bpor71ebdpdd" data-title="Optimistic UI: how to make React reducers be less suck" class="article-share-link">Share</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/react/" rel="tag">react</a></li></ul>
 
@@ -1022,7 +1022,7 @@ func main() &#123;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://aredherring.tech/2021/06/05/What-s-a-Leak-anyway/" data-id="clipncyuw0009chqi2hhp7nts" data-title="What&#39;s a Leak anyway?" class="article-share-link">Share</a>
+      <a data-url="http://aredherring.tech/2021/06/05/What-s-a-Leak-anyway/" data-id="clipo7p720009bporb8my6sso" data-title="What&#39;s a Leak anyway?" class="article-share-link">Share</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/riot/" rel="tag">riot</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/security/" rel="tag">security</a></li></ul>
 
