@@ -11,27 +11,23 @@ An oft-repeated question on the [/r/golang][golang-sub] subreddit is "when shoul
 [4]: https://www.reddit.com/user/TheMadMan001
 
 > One point that was left out from previous posts was the when.
-
 > If you’re dealing with small or negligible amounts of data then it doesn’t matter too much. The business logic and programmers preferences will drive when a pointer is used or not.
-
 > However when you have to deal with extremely large variables, in terms of memory size, then passing by pointer will often be required.
 
-[/u/germanyhasnosun][2][\[source\]][3]
+[/u/germanyhasnosun][2]<sup>\[[source][3]\]</sup>
 
 [2]: https://www.reddit.com/user/germanyhasnosun
 [3]: https://np.reddit.com/r/golang/comments/143zq8n/need_help_understanding_why_and_where_to_use/jndlx6p/
 
 Another similar comment that implied that at least one of the reasons to use pointers was to reduce copying (emphasis mine):
 
-One concept in Go is that variables are passed by value.
-
+> One concept in Go is that variables are passed by value.
 > IMO to understand how/when to use pointers, it’s important to understand how data is passed.
-
 > **Pointers can have a benefit when you have structs containing lots of data.** Like database operations.
-
 > The only way to mutate a variable that you pass to a function is by passing a pointer. By default, the pass-by-value means that changes you make are on the copy you’re working on. Thus, they are not reflected in the calling function.
 
-[/u/anon221911][5][\[source\]][6]
+[/u/anon221911][5]<sup>\[[source][6]\]</sup>
+
 [5]: https://www.reddit.com/user/anon221911
 [6]: https://www.reddit.com/r/golang/comments/143zq8n/need_help_understanding_why_and_where_to_use/jncwyq0/
 
