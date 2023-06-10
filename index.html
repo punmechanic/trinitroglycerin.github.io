@@ -58,6 +58,81 @@
 
       <main id="main">
   
+    <article id="post-Go-Using-pointers-to-reduce-copies-is-premature-optimization" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/06/10/Go-Using-pointers-to-reduce-copies-is-premature-optimization/">Go: Using pointers to reduce copies is premature optimization</a>
+    </h1>
+  
+
+        <div class='article-meta'>
+	Published <time class="dt-published" datetime="2023-06-10T05:35:12.000Z" itemprop="datePublished">06-09-2023</time>
+</div>
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>An oft-repeated question on the [/r/golang][golang-sub] subreddit is “when should I use pointers instead of passing a value?”. This question was asked <a target="_blank" rel="noopener" href="https://www.reddit.com/r/golang">this evening</a> by <a target="_blank" rel="noopener" href="https://np.reddit.com/r/golang/comments/143zq8n/need_help_understanding_why_and_where_to_use/">/u/TheMadMan001</a>. Whenever this question gets asked, there are a few positions that people in the comments tend to take, and the most common one I see by a wide margin is that “You should use pointers when you’re dealing with large values, because then Go doesn’t have to copy the value onto the stack”:</p>
+<blockquote>
+<p>One point that was left out from previous posts was the when.<br>If you’re dealing with small or negligible amounts of data then it doesn’t matter too much. The business logic and programmers preferences will drive when a pointer is used or not.<br>However when you have to deal with extremely large variables, in terms of memory size, then passing by pointer will often be required.</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.reddit.com/user/germanyhasnosun">/u/germanyhasnosun</a><sup>[<a target="_blank" rel="noopener" href="https://np.reddit.com/r/golang/comments/143zq8n/need_help_understanding_why_and_where_to_use/jndlx6p/">source</a>]</sup></p>
+<p>Another similar comment that implied that at least one of the reasons to use pointers was to reduce copying (emphasis mine):</p>
+<blockquote>
+<p>One concept in Go is that variables are passed by value.<br>IMO to understand how/when to use pointers, it’s important to understand how data is passed.<br><strong>Pointers can have a benefit when you have structs containing lots of data.</strong> Like database operations.<br>The only way to mutate a variable that you pass to a function is by passing a pointer. By default, the pass-by-value means that changes you make are on the copy you’re working on. Thus, they are not reflected in the calling function.</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.reddit.com/user/anon221911">/u/anon221911</a><sup>[<a target="_blank" rel="noopener" href="https://www.reddit.com/r/golang/comments/143zq8n/need_help_understanding_why_and_where_to_use/jncwyq0/">source</a>]</sup></p>
+<p>Suppose we have a structure that is quite large, and we want to pass it to a function to perform some work on it.</p>
+<pre class="line-numbers language-golang" data-language="golang"><code class="language-golang">type LargeStruct struct &#123;
+	Numbers [10]uint64
+&#125;
+
+func DoWork(LargeStruct)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>If I invoke <code>DoWork</code> in Go 1.20, 80 bytes will be copied to the stack, because LargeStruct is 80 bytes in size. If I instead altered DoWork to accept a pointer, then only 8 bytes would be copied. You would be forgiven for thinking that copying a lower number of bytes is always strictly better - copying sounds like wasted effort, after all. But it’s more complicated than this due to how modern computers work.</p>
+<p>Modern computers are fast. Wicked fast. A good chunk of the speed of modern computers is thanks to the way that they handle dealing with data. When a programmer instructs a CPU to perform some work via a program, ultimately that program boils down to performing operations on CPU registers. Registers are very small - a 64 bit computer will have registers that are 64 bits size, in most cases (some may be slightly larger). So, how does a computer deal with a struct that is 80 bytes?</p>
+<p>A naive understanding of computers might lead you to believe that a CPU reads 64 bytes, and, after it’s done with those 64, it reads the remaining 16 bytes. This would be tremendously slow. Your RAM is very quick, but compared to the speed a CPU operates at, it’s orders of magnitude slower. What actually happens is that a CPU will read data from RAM into one of its caches - L1, L2, or L3 - one cache line at a time. The registers will be populated from these cache lines. This process is invisible to the programmer, but taking advantage of it can result in very large performance increases, because when a CPU looks for a value to store in a register, it will first check the L1 cache, then the L2, then the L3 and it will then go and check DRAM. Each one of these jumps (<strong>Cache Misses</strong>) incurs significant overhead and has a drastic negative impact on application performance.</p>
+<p>Explaining all of the intricacies of a CPU in this post would take a long time and would be repeating ground that others <a target="_blank" rel="noopener" href="https://teivah.medium.com/go-and-cpu-caches-af5d32cc5592">have tread much better than I could</a>, but what matters for the current topic is the idea of <em>locality</em>. When a CPU reads data from RAM into one of its caches, it will read as many cache lines as required into its cache in order to retrieve the data its looking for. This means attempting to retrieve <code>LargeStruct</code> on a 64 bit PC will (probably) result in the CPU reading 128 bytes - 80 bytes of those will be the value of <code>LargeStruct</code>, and the rest will be values that are around it. Values that are closer to each other in physical memory have <em>spatial</em> locality, and will likely be available in at least one of the CPUs caches at the same time. If the values are close to each other in physical memory, then there’s a better chance that those values will be on either the same or neighbouring cache lines when a value is read into one of the CPU’s caches, which decreases the likelihood of a cache miss and thus decreases the amount of expensive “jumps” the CPU has to make to find the value it’s looking for.</p>
+<p>So! How does this relate to putting a pointer vs a struct as a function parameter?</p>
+<p>When a pointer is passed to a function, what will be read into the cache of the processor is (probably) the memory address of the value that the processor needs to work on, and not the <em>actual</em> value. When the processor attempts to do some work on the value, it first has to go and find wherever the value that the address is pointing to is located. In some trivial examples, the value and the address could have spatial or temporal locality - for example, the following code is likely going to have the address of the pointer and the value in the same cache line:</p>
+<pre class="line-numbers language-golang" data-language="golang"><code class="language-golang">func multiplyInPlace(val *uint, multipler uint)
+
+func main() &#123;
+  a :&#x3D; 2
+  multiplyInPlace(&amp;a, 2)
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>However, the more levels of indirection you have, the less likely this is to be true, and the more likely it is that a CPU having to deference a pointer (I’m simplifying - a computer doesn’t know what a pointer <em>is</em>) will result in a cache miss, and thus a significant performance hit. However, were one to pass the values directly, rather than using a pointer, it’s possible that the values would be spatially or temporally local to all of the other arguments passed to the function, thus reducing the chance of a cache miss and increasing performance. Of course, this copy has a cost too. What’s the right answer then? When is a value “big enough” to justify the cost of dereferencing an address and causing a cache miss? When is a value small enough that you should not bother with a pointer?</p>
+<p>There is no real general rule. <strong>The answer is “It Depends”</strong>. And for applications that are HTTP servers, it <em>probably</em> is all bikeshedding anyway - most of the time spent in <em>most</em> web servers is spent idling waiting for I/O. So, what would my sage advice be?</p>
+<p>My advice would be that you do not use pointers for their perceived performance characteristics. As I have labored to attempt to make clear in this article, any perceived performance benefits of using a pointer can easily be undone by the nature of how memory is organized within a CPU, and using a pointer <em>can</em> make it harder to follow the flow of data in a program. On the other hand, never using pointers makes some very useful patterns, such as the ones present in <code>json.Encoder</code>, impossible.</p>
+<p>Pointers are a tool to indicate that you are referring to a value somewhere else. This can be a useful tool for:</p>
+<ul>
+<li>Pools - Pointers can help you return a reference to a shared object that is protected by a mutex for which there can only be a limited number of copies</li>
+<li>Mutation - Pointers are useful when you want a function to mutate a value that it received (this includes methods).</li>
+<li>Optional values - While I prefer using the <code>val, ok := DoThing()</code> pattern, one can easily use a pointer to indicate the absence of a value by returning <code>nil</code>.</li>
+</ul>
+<p>This is not an exhaustive list: The point (heh) is that pointers have clearly defined semantics on what they enable you to do. If you need to mutate a value you don’t own, or indicate absence of a value, or loan a value out, returning or accepting a pointer is a great idea because it communicates to the consumer of your code that they might not necessarily be in complete control of the value backed by that pointer.</p>
+<p>You <strong>shouldn’t</strong> reach for a pointer (or indeed <strong>avoid</strong> using pointers) because of some handwavy notion that one might be somewhat faster than the other. You should use the construct that makes the most sense to express your intent in code. After you’ve written your code and have verified it works, that is the point where you might want to consider profiling your code and identifying if copying a large value, because you didn’t use a pointer, is actually causing your code to slow down appreciably. </p>
+<p>If you take nothing else away from this article, remember the following mantra as a way to guide you on what the order of operations should be when authoring code.</p>
+<p><strong>Make It Work, Make It Beautiful, Make It Fast</strong>.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://aredherring.tech/2023/06/10/Go-Using-pointers-to-reduce-copies-is-premature-optimization/" data-id="clipn5n680000dbot3vdc4fqq" data-title="Go: Using pointers to reduce copies is premature optimization" class="article-share-link">Share</a>
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/golang/" rel="tag">golang</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+  
     <article id="post-Pay-Transparency-2022" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-inner">
     
@@ -336,7 +411,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://aredherring.tech/2022/06/18/Pay-Transparency-2022/" data-id="cl4k2584r000391oraun3dcuz" data-title="Pay Transparency 2022" class="article-share-link">Share</a>
+      <a data-url="http://aredherring.tech/2022/06/18/Pay-Transparency-2022/" data-id="clipn5n6h0004dbotdft17suc" data-title="Pay Transparency 2022" class="article-share-link">Share</a>
       
     </footer>
   </div>
@@ -391,7 +466,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://aredherring.tech/2022/05/31/IP-bans-don-t-work-Here-s-why/" data-id="cl4k2584k000091or14lb9k7i" data-title="IP bans don&#39;t work. Here&#39;s why." class="article-share-link">Share</a>
+      <a data-url="http://aredherring.tech/2022/05/31/IP-bans-don-t-work-Here-s-why/" data-id="clipn5n6c0001dbotfd2o4h2n" data-title="IP bans don&#39;t work. Here&#39;s why." class="article-share-link">Share</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/security/" rel="tag">security</a></li></ul>
 
@@ -690,7 +765,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://aredherring.tech/2021/12/05/Pay-Transparency/" data-id="cl4k2584s000491or92tp2efa" data-title="Pay Transparency 2021" class="article-share-link">Share</a>
+      <a data-url="http://aredherring.tech/2021/12/05/Pay-Transparency/" data-id="clipn5n6i0005dbot35k03iwq" data-title="Pay Transparency 2021" class="article-share-link">Share</a>
       
     </footer>
   </div>
@@ -750,7 +825,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://aredherring.tech/2021/10/06/Twitch-got-breached-Here-s-what-you-need-to-know/" data-id="cl4k2584t000591orco5p30zs" data-title="Twitch got breached." class="article-share-link">Share</a>
+      <a data-url="http://aredherring.tech/2021/10/06/Twitch-got-breached-Here-s-what-you-need-to-know/" data-id="clipn5n6k0008dbot3bwc8dou" data-title="Twitch got breached." class="article-share-link">Share</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/incidents/" rel="tag">incidents</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/psa/" rel="tag">psa</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/security/" rel="tag">security</a></li></ul>
 
@@ -856,7 +931,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://aredherring.tech/2021/07/28/Optimistic-UI-how-to-make-React-reducers-be-less-suck/" data-id="cl4k2584o000191or06k2435c" data-title="Optimistic UI: how to make React reducers be less suck" class="article-share-link">Share</a>
+      <a data-url="http://aredherring.tech/2021/07/28/Optimistic-UI-how-to-make-React-reducers-be-less-suck/" data-id="clipn5n6g0003dbotgryi62b0" data-title="Optimistic UI: how to make React reducers be less suck" class="article-share-link">Share</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/react/" rel="tag">react</a></li></ul>
 
@@ -947,7 +1022,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://aredherring.tech/2021/06/05/What-s-a-Leak-anyway/" data-id="cl4k2584u000891orfeq789e0" data-title="What&#39;s a Leak anyway?" class="article-share-link">Share</a>
+      <a data-url="http://aredherring.tech/2021/06/05/What-s-a-Leak-anyway/" data-id="clipn5n6l0009dbot3f9564gi" data-title="What&#39;s a Leak anyway?" class="article-share-link">Share</a>
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/riot/" rel="tag">riot</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/security/" rel="tag">security</a></li></ul>
 
@@ -969,7 +1044,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/incidents/" rel="tag">incidents</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/psa/" rel="tag">psa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/riot/" rel="tag">riot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/" rel="tag">security</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/" rel="tag">golang</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/incidents/" rel="tag">incidents</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/psa/" rel="tag">psa</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/react/" rel="tag">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/riot/" rel="tag">riot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/security/" rel="tag">security</a></li></ul>
     </div>
   </div>
 
@@ -979,7 +1054,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/incidents/" style="font-size: 10px;">incidents</a> <a href="/tags/javascript/" style="font-size: 10px;">javascript</a> <a href="/tags/psa/" style="font-size: 10px;">psa</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/riot/" style="font-size: 10px;">riot</a> <a href="/tags/security/" style="font-size: 20px;">security</a>
+      <a href="/tags/golang/" style="font-size: 10px;">golang</a> <a href="/tags/incidents/" style="font-size: 10px;">incidents</a> <a href="/tags/javascript/" style="font-size: 10px;">javascript</a> <a href="/tags/psa/" style="font-size: 10px;">psa</a> <a href="/tags/react/" style="font-size: 10px;">react</a> <a href="/tags/riot/" style="font-size: 10px;">riot</a> <a href="/tags/security/" style="font-size: 20px;">security</a>
     </div>
   </div>
 
@@ -988,7 +1063,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/06/">June 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">July 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">June 2021</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/06/">June 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">October 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/07/">July 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">June 2021</a></li></ul>
     </div>
   </div>
 
@@ -999,6 +1074,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2023/06/10/Go-Using-pointers-to-reduce-copies-is-premature-optimization/">Go: Using pointers to reduce copies is premature optimization</a>
+          </li>
         
           <li>
             <a href="/2022/06/18/Pay-Transparency-2022/">Pay Transparency 2022</a>
@@ -1016,10 +1095,6 @@
             <a href="/2021/10/06/Twitch-got-breached-Here-s-what-you-need-to-know/">Twitch got breached.</a>
           </li>
         
-          <li>
-            <a href="/2021/07/28/Optimistic-UI-how-to-make-React-reducers-be-less-suck/">Optimistic UI: how to make React reducers be less suck</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -1031,7 +1106,7 @@
   
   <div id="footer-info">
     
-    &copy; 2022 Dan<br>
+    &copy; 2023 Dan<br>
     Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
   </div>
 </footer>
